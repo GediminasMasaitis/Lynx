@@ -42,6 +42,12 @@ public sealed partial class Engine
         NodeType ttElementType = default;
         int ttEvaluation = default;
 
+        bool isInCheck = position.IsInCheck();
+        if (isInCheck)
+        {
+            ++depth;
+        }
+
         if (!isRoot)
         {
             (ttEvaluation, ttBestMove, ttElementType) = _tt.ProbeHash(_ttMask, position, depth, ply, alpha, beta);
@@ -64,12 +70,6 @@ public sealed partial class Engine
         // Before any time-consuming operations
         _searchCancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-        bool isInCheck = position.IsInCheck();
-
-        if (isInCheck)
-        {
-            ++depth;
-        }
         if (depth <= 0)
         {
             if (MoveGenerator.CanGenerateAtLeastAValidMove(position))
